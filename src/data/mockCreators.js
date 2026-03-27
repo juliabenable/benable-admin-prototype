@@ -302,7 +302,7 @@ export const MOCK_CREATORS = [
   {
     id: 'c19', name: 'Sofia Reyes', handle: '@sofiaskin', niche: 'Beauty',
     followers: 16200, engagement: 4.4, avgViews: 21000, avgLikes: 2600,
-    campaignId: 'camp2', stage: 'accepted_campaign', daysInStage: 1, isOverdue: false,
+    campaignId: 'camp2', stage: 'declined_campaign', daysInStage: 1, isOverdue: false,
     photo: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=200&h=200&fit=crop&crop=face', initials: 'SR', city: 'Dallas, TX',
     bio: 'Skincare & beauty. Latina creator sharing my favorites.',
     email: 'sofia@sofiaskin.com', phone: null,

@@ -3,7 +3,7 @@
  * OVERDUE → DUE_SOON → ON_TRACK → DONE
  */
 
-const DONE_STAGES = ['completed', 'denied'];
+const DONE_STAGES = ['completed', 'denied', 'declined_campaign'];
 const DUE_SOON_THRESHOLD_HOURS = 48;
 
 export function getUrgencyState(creator) {
@@ -13,6 +13,8 @@ export function getUrgencyState(creator) {
       state: 'done',
       actionText: creator.stage === 'completed'
         ? `Delivered Mar ${20 + (creator.daysInStage || 0)}`
+        : creator.stage === 'declined_campaign'
+        ? 'Declined this campaign'
         : 'Not selected',
     };
   }
@@ -80,6 +82,7 @@ function getOnTrackLabel(stage, days) {
     in_program: `Active creator · ${days}d`,
     invited_to_campaign: `Waiting for campaign response · ${days}d`,
     accepted_campaign: `Ready for products · ${days}d`,
+    declined_campaign: 'Declined this campaign',
     assigned_to_campaign: `Visible to brand · ${days}d`,
     products_chosen: `Products selected · ${days}d`,
     products_ordered: `In transit · ${days}d`,
