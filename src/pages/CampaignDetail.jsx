@@ -49,7 +49,7 @@ export default function CampaignDetailContent({ campaignId }) {
     const approved = campaignCreators.filter(c => ['content_approved', 'posted'].includes(c.stage) && !c.isOverdue);
     const completed = campaignCreators.filter(c => c.stage === 'completed');
     const denied = campaignCreators.filter(c => c.stage === 'denied');
-    const inProgressStages = ['not_in_program', 'invited_to_program', 'in_program', 'invited_to_campaign', 'accepted_campaign', 'products_chosen', 'products_ordered', 'products_received', 'waiting_for_content'];
+    const inProgressStages = ['not_in_program', 'invited_to_program', 'in_program', 'invited_to_campaign', 'accepted_campaign', 'assigned_to_campaign', 'products_chosen', 'products_ordered', 'products_received', 'waiting_for_content'];
     const inProgress = campaignCreators.filter(c => inProgressStages.includes(c.stage) && !c.isOverdue);
     return [
       { key: 'review', label: 'Needs Review', color: '#C68A19', bg: '#FFF8EB', items: needReview, defaultOpen: true, actionType: 'review' },
