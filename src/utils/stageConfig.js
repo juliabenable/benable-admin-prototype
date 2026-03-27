@@ -1,5 +1,6 @@
 export const PHASES = [
-  { key: 'onboarding', label: 'Onboarding', color: '#4A7FC7', bg: '#EBF1FA' },
+  { key: 'creator_program', label: 'Creator Program', color: '#4A7FC7', bg: '#EBF1FA' },
+  { key: 'campaign_invite', label: 'Campaign Invite', color: '#6B5FC7', bg: '#F0EDFA' },
   { key: 'fulfillment', label: 'Fulfillment', color: '#3D8B8B', bg: '#EBF5F5' },
   { key: 'content', label: 'Content', color: '#C68A19', bg: '#FFF8EB' },
   { key: 'complete', label: 'Complete', color: '#3D8B5E', bg: '#EDF7F0' },
@@ -7,10 +8,11 @@ export const PHASES = [
 ];
 
 export const STAGES = [
-  { key: 'pre_invited', label: 'Pre-Invited', phase: 'onboarding', color: '#4A7FC7', bg: '#EBF1FA', helperText: 'Ready for review' },
-  { key: 'invited', label: 'Invited', phase: 'onboarding', color: '#4A7FC7', bg: '#EBF1FA', helperText: 'Waiting for response...' },
-  { key: 'accepted_invite', label: 'Accepted Invite', phase: 'onboarding', color: '#4A7FC7', bg: '#EBF1FA', helperText: 'Wants to learn more' },
-  { key: 'accepted_campaign', label: 'Accepted Campaign', phase: 'onboarding', color: '#4A7FC7', bg: '#EBF1FA', helperText: 'Committed — ready for products' },
+  { key: 'not_in_program', label: 'Not in Creator Program', phase: 'creator_program', color: '#4A7FC7', bg: '#EBF1FA', helperText: 'Ready for review' },
+  { key: 'invited_to_program', label: 'Invited to Creator Program', phase: 'creator_program', color: '#4A7FC7', bg: '#EBF1FA', helperText: 'Waiting for response...' },
+  { key: 'in_program', label: 'In Creator Program', phase: 'creator_program', color: '#4A7FC7', bg: '#EBF1FA', helperText: 'Active creator' },
+  { key: 'invited_to_campaign', label: 'Invited to Campaign', phase: 'campaign_invite', color: '#6B5FC7', bg: '#F0EDFA', helperText: 'Waiting for campaign response...' },
+  { key: 'accepted_campaign', label: 'Accepted Campaign', phase: 'campaign_invite', color: '#6B5FC7', bg: '#F0EDFA', helperText: 'Committed — ready for products' },
   { key: 'products_chosen', label: 'Products Chosen', phase: 'fulfillment', color: '#3D8B8B', bg: '#EBF5F5', helperText: 'Selected products from catalog' },
   { key: 'products_ordered', label: 'Products Ordered', phase: 'fulfillment', color: '#3D8B8B', bg: '#EBF5F5', helperText: 'Products in transit...' },
   { key: 'products_received', label: 'Products Received', phase: 'fulfillment', color: '#3D8B8B', bg: '#EBF5F5', helperText: 'Products confirmed delivered' },
@@ -29,9 +31,10 @@ export const PHASE_MAP = Object.fromEntries(PHASES.map(p => [p.key, p]));
 export const KANBAN_STAGES = STAGES.filter(s => s.key !== 'denied');
 
 export const DEFAULT_TIME_LIMITS = {
-  pre_invited: null,
-  invited: 48,
-  accepted_invite: 24,
+  not_in_program: null,
+  invited_to_program: 48,
+  in_program: 24,
+  invited_to_campaign: 48,
   accepted_campaign: 48,
   products_chosen: 24,
   products_ordered: 168,
@@ -44,9 +47,10 @@ export const DEFAULT_TIME_LIMITS = {
 };
 
 export const STAGE_TRANSITION_LABELS = [
-  { from: 'pre_invited', to: 'invited', label: 'Pre-Invited → Invited' },
-  { from: 'invited', to: 'accepted_invite', label: 'Invited → Accepted Invite' },
-  { from: 'accepted_invite', to: 'accepted_campaign', label: 'Accepted Invite → Accepted Campaign' },
+  { from: 'not_in_program', to: 'invited_to_program', label: 'Not in Program → Invited to Program' },
+  { from: 'invited_to_program', to: 'in_program', label: 'Invited to Program → In Program' },
+  { from: 'in_program', to: 'invited_to_campaign', label: 'In Program → Invited to Campaign' },
+  { from: 'invited_to_campaign', to: 'accepted_campaign', label: 'Invited to Campaign → Accepted Campaign' },
   { from: 'accepted_campaign', to: 'products_chosen', label: 'Accepted Campaign → Products Chosen' },
   { from: 'products_chosen', to: 'products_ordered', label: 'Products Chosen → Products Ordered' },
   { from: 'products_ordered', to: 'products_received', label: 'Products Ordered → Products Received' },

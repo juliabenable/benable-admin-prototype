@@ -198,7 +198,7 @@ const styles = {
   // Phase bars
   phaseBars: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(4, 1fr)',
+    gridTemplateColumns: 'repeat(5, 1fr)',
     gap: 'var(--space-2)',
     marginBottom: 'var(--space-3)',
   },

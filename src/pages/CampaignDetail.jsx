@@ -49,7 +49,7 @@ export default function CampaignDetailContent({ campaignId }) {
     const approved = campaignCreators.filter(c => ['content_approved', 'posted'].includes(c.stage) && !c.isOverdue);
     const completed = campaignCreators.filter(c => c.stage === 'completed');
     const denied = campaignCreators.filter(c => c.stage === 'denied');
-    const inProgressStages = ['pre_invited', 'invited', 'accepted_invite', 'accepted_campaign', 'products_chosen', 'products_ordered', 'products_received', 'waiting_for_content'];
+    const inProgressStages = ['not_in_program', 'invited_to_program', 'in_program', 'invited_to_campaign', 'accepted_campaign', 'products_chosen', 'products_ordered', 'products_received', 'waiting_for_content'];
     const inProgress = campaignCreators.filter(c => inProgressStages.includes(c.stage) && !c.isOverdue);
     return [
       { key: 'review', label: 'Needs Review', color: '#C68A19', bg: '#FFF8EB', items: needReview, defaultOpen: true, actionType: 'review' },
@@ -61,7 +61,7 @@ export default function CampaignDetailContent({ campaignId }) {
     ].filter(s => s.items.length > 0);
   }, [campaignCreators]);
 
-  const preInvitedCreators = campaignCreators.filter(c => c.stage === 'pre_invited');
+  const preInvitedCreators = campaignCreators.filter(c => c.stage === 'not_in_program');
 
   if (!campaign) return <div style={{ padding: 32 }}>Campaign not found.</div>;
 
@@ -97,12 +97,12 @@ export default function CampaignDetailContent({ campaignId }) {
       {view === 'setup' && (
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-4)' }}>
-            <h2 style={{ fontSize: 16, fontWeight: 600 }}>Creator Setup ({preInvitedCreators.length} pre-invited)</h2>
+            <h2 style={{ fontSize: 16, fontWeight: 600 }}>Creator Setup ({preInvitedCreators.length} not in program)</h2>
             <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
               {selectedSetup.length > 0 && (
                 <>
                   <button className="btn btn-primary btn-sm" onClick={() => {
-                    selectedSetup.forEach(id => moveCreatorStage(id, 'invited'));
+                    selectedSetup.forEach(id => moveCreatorStage(id, 'invited_to_program'));
                     addToast(`${selectedSetup.length} creators invited`);
                     setSelectedSetup([]);
                   }}>Invite Selected ({selectedSetup.length})</button>
@@ -130,7 +130,7 @@ export default function CampaignDetailContent({ campaignId }) {
                   onToggleSelect={() => setSelectedSetup(prev => prev.includes(creator.id) ? prev.filter(id => id !== creator.id) : [...prev, creator.id])}
                   isTop3={top3.includes(creator.id)}
                   onToggleTop3={() => setTop3(prev => prev.includes(creator.id) ? prev.filter(id => id !== creator.id) : [...prev, creator.id])}
-                  onInvite={(id) => { moveCreatorStage(id, 'invited'); addToast(`${creator.name} invited`); }}
+                  onInvite={(id) => { moveCreatorStage(id, 'invited_to_program'); addToast(`${creator.name} invited`); }}
                   onDeny={(id) => { moveCreatorStage(id, 'denied'); addToast(`${creator.name} denied`); }}
                   isExpanded={expandedSetupId === creator.id}
                   onToggleExpand={() => setExpandedSetupId(prev => prev === creator.id ? null : creator.id)}
@@ -537,8 +537,8 @@ const ls = {
     display: 'flex',
     alignItems: 'center',
     gap: 'var(--space-2)',
-    flex: '0 0 140px',
-    justifyContent: 'flex-end',
+    flex: '0 0 160px',
+    justifyContent: 'center',
   },
   urgIconInner: { display: 'flex', alignItems: 'center', justifyContent: 'center', width: 20, height: 20, borderRadius: 5, fontSize: 12, fontWeight: 700, flexShrink: 0 },
   socialLink: { fontSize: 11, fontWeight: 600, color: 'var(--color-accent)', textDecoration: 'none', padding: '1px 4px', borderRadius: 'var(--radius-sm)', background: 'var(--color-accent-light)' },

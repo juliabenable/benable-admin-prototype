@@ -88,7 +88,7 @@ export function AppProvider({ children }) {
       ...c,
       id: `c_import_${Date.now()}_${i}`,
       campaignId,
-      stage: 'invited',
+      stage: 'not_in_program',
       daysInStage: 0,
       isOverdue: false,
       notes: [],

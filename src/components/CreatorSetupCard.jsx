@@ -22,7 +22,10 @@ function TikTokIcon({ size = 18 }) {
   );
 }
 
+const PRE_PROGRAM_STAGES = ['not_in_program', 'invited_to_program'];
+
 export default function CreatorSetupCard({ creator, onInvite, onDeny, isSelected, onToggleSelect, isTop3, onToggleTop3, isExpanded, onToggleExpand }) {
+  const isPreProgram = PRE_PROGRAM_STAGES.includes(creator.stage);
   const [selectedPosts, setSelectedPosts] = useState([]);
   const [activePost, setActivePost] = useState(0);
   const [aiReasons, setAiReasons] = useState([...(creator.aiMatchReasons || [])]);
@@ -84,7 +87,7 @@ export default function CreatorSetupCard({ creator, onInvite, onDeny, isSelected
               {isTop3 && <span style={styles.top3Badge}><Star size={10} fill="#C68A19" color="#C68A19" /> Top 3</span>}
             </div>
             <div style={styles.collapsedMeta}>
-              {creator.handle} · {formatFollowers(creator.followers)} · {formatEngagement(creator.engagement)} eng
+              {creator.handle} · {formatFollowers(creator.followers)} followers{!isPreProgram && ` · ${formatEngagement(creator.engagement)} eng`}
             </div>
           </div>
         </div>
@@ -264,29 +267,40 @@ export default function CreatorSetupCard({ creator, onInvite, onDeny, isSelected
                   <span style={styles.statsTableLabel}>Followers</span>
                   <span style={styles.statsTableValue}>{formatFollowers(creator.followers)}</span>
                 </div>
-                <div style={styles.statsTableCell}>
-                  <span style={styles.statsTableLabel}>Engagement</span>
-                  <span style={styles.statsTableValue}>~{formatEngagement(creator.engagement)}</span>
-                </div>
+                {!isPreProgram && (
+                  <div style={styles.statsTableCell}>
+                    <span style={styles.statsTableLabel}>Engagement</span>
+                    <span style={styles.statsTableValue}>~{formatEngagement(creator.engagement)}</span>
+                  </div>
+                )}
               </div>
             </div>
-            <div>
-              <h4 style={styles.sectionLabel}>Audience</h4>
-              <div style={styles.statsTable}>
-                <div style={styles.statsTableCell}>
-                  <span style={styles.statsTableLabel}>Location</span>
-                  <span style={styles.statsTableValue}>{creator.demographics?.location || '—'}</span>
-                </div>
-                <div style={styles.statsTableCell}>
-                  <span style={styles.statsTableLabel}>Gender</span>
-                  <span style={styles.statsTableValue}>{creator.demographics?.gender || '—'}</span>
-                </div>
-                <div style={styles.statsTableCell}>
-                  <span style={styles.statsTableLabel}>Age Range</span>
-                  <span style={styles.statsTableValue}>{creator.demographics?.age || '—'}</span>
+            {isPreProgram ? (
+              <div>
+                <h4 style={styles.sectionLabel}>Audience</h4>
+                <div style={{ fontSize: 13, color: 'var(--color-text-tertiary)', fontStyle: 'italic', padding: '10px 0' }}>
+                  Full audience data available after joining Creator Program
                 </div>
               </div>
-            </div>
+            ) : (
+              <div>
+                <h4 style={styles.sectionLabel}>Audience</h4>
+                <div style={styles.statsTable}>
+                  <div style={styles.statsTableCell}>
+                    <span style={styles.statsTableLabel}>Location</span>
+                    <span style={styles.statsTableValue}>{creator.demographics?.location || '—'}</span>
+                  </div>
+                  <div style={styles.statsTableCell}>
+                    <span style={styles.statsTableLabel}>Gender</span>
+                    <span style={styles.statsTableValue}>{creator.demographics?.gender || '—'}</span>
+                  </div>
+                  <div style={styles.statsTableCell}>
+                    <span style={styles.statsTableLabel}>Age Range</span>
+                    <span style={styles.statsTableValue}>{creator.demographics?.age || '—'}</span>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* AI Match — editable */}

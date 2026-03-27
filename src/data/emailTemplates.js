@@ -2,7 +2,7 @@ export const EMAIL_TEMPLATES = {
   invite_reminder: {
     key: 'invite_reminder',
     label: 'Invite Reminder',
-    stage: 'invited',
+    stage: 'invited_to_program',
     subject: 'Friendly Reminder: {{campaignName}} Campaign Invite — Please respond by tomorrow',
     body: `Hi {{creatorName}},
 
@@ -18,7 +18,7 @@ The Benable Team`,
   acceptance_reminder: {
     key: 'acceptance_reminder',
     label: 'Campaign Acceptance Reminder',
-    stage: 'accepted_invite',
+    stage: 'invited_to_campaign',
     subject: 'Next Step: Accept the {{campaignName}} Campaign within 48 hours',
     body: `Hi {{creatorName}},
 

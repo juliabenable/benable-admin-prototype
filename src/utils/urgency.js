@@ -28,7 +28,7 @@ export function getUrgencyState(creator) {
 
   // DUE SOON: within 48h of expected transition (daysInStage >= 2 and not overdue)
   // Approximate: if daysInStage >= 2 for stages that have time limits
-  const dueSoonStages = ['invited', 'accepted_invite', 'waiting_for_content', 'content_submitted', 'content_approved'];
+  const dueSoonStages = ['invited_to_program', 'in_program', 'invited_to_campaign', 'waiting_for_content', 'content_submitted', 'content_approved'];
   if (dueSoonStages.includes(creator.stage) && creator.daysInStage >= 2) {
     return {
       state: 'due_soon',
@@ -45,8 +45,9 @@ export function getUrgencyState(creator) {
 
 function getOverdueLabel(stage) {
   const map = {
-    invited: 'Response',
-    accepted_invite: 'Campaign acceptance',
+    invited_to_program: 'Program invite response',
+    in_program: 'Campaign readiness',
+    invited_to_campaign: 'Campaign invite response',
     accepted_campaign: 'Product selection',
     products_chosen: 'Order confirmation',
     products_ordered: 'Delivery',
@@ -61,8 +62,9 @@ function getOverdueLabel(stage) {
 
 function getDueSoonLabel(stage) {
   const map = {
-    invited: 'Response due soon',
-    accepted_invite: 'Acceptance due tomorrow',
+    invited_to_program: 'Program response due soon',
+    in_program: 'Campaign invite due soon',
+    invited_to_campaign: 'Campaign response due soon',
     waiting_for_content: 'Content due soon',
     content_submitted: 'Review needed soon',
     content_approved: 'Post due soon',
@@ -72,9 +74,10 @@ function getDueSoonLabel(stage) {
 
 function getOnTrackLabel(stage, days) {
   const stageLabels = {
-    pre_invited: 'Ready for review',
-    invited: `Waiting for response · ${days}d`,
-    accepted_invite: `Wants to learn more · ${days}d`,
+    not_in_program: 'Ready for review',
+    invited_to_program: `Waiting for program response · ${days}d`,
+    in_program: `Active creator · ${days}d`,
+    invited_to_campaign: `Waiting for campaign response · ${days}d`,
     accepted_campaign: `Ready for products · ${days}d`,
     products_chosen: `Products selected · ${days}d`,
     products_ordered: `In transit · ${days}d`,
