@@ -52,7 +52,7 @@ export default function Creators() {
         </div>
         <select value={campaignFilter} onChange={e => setCampaignFilter(e.target.value)} style={styles.filterSelect}>
           <option value="all">All Campaigns</option>
-          {campaigns.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+          {campaigns.map(c => <option key={c.id} value={c.id}>{c.brand || c.name} — {c.name}</option>)}
         </select>
         <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} style={styles.filterSelect}>
           <option value="all">All Stages</option>
@@ -86,7 +86,7 @@ export default function Creators() {
                   </div>
                   <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
                     <span style={styles.nichePill}>{creator.niche}</span>
-                    <span style={styles.campaignTag}>{camp?.name}</span>
+                    <span style={styles.campaignTag}>{camp?.brand || camp?.name}</span>
                     {creator.usedBefore && <span style={styles.usedBadge}>Used Before ({creator.campaignsCompleted})</span>}
                   </div>
                 </div>

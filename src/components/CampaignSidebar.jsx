@@ -40,10 +40,10 @@ export default function CampaignSidebar({ activeCampaignId, onSelect }) {
           {camp.logo ? (
             <img src={camp.logo} alt="" style={styles.itemLogo} />
           ) : (
-            <div style={styles.itemIcon}>{camp.name[0]}</div>
+            <div style={styles.itemIcon}>{(camp.brand || camp.name)[0]}</div>
           )}
           <div style={styles.itemText}>
-            <span style={{ ...styles.itemName, color: isActive ? 'var(--color-accent)' : 'var(--color-text-primary)' }}>{camp.name}</span>
+            <span style={{ ...styles.itemName, color: isActive ? 'var(--color-accent)' : 'var(--color-text-primary)' }}>{camp.brand || camp.name}</span>
             <span style={styles.itemCount}>{count} creators</span>
           </div>
           <div

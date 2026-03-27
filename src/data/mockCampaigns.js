@@ -1,7 +1,8 @@
 export const MOCK_CAMPAIGNS = [
   {
     id: 'camp1',
-    name: 'Pikora',
+    brand: 'Pikora',
+    name: 'Morning Routine Campaign',
     description: 'Latin-inspired bone broth with a cozy kitchen content angle.',
     status: 'live',
     createdAt: '2026-03-18',
@@ -9,7 +10,8 @@ export const MOCK_CAMPAIGNS = [
   },
   {
     id: 'camp2',
-    name: '28 Litsea',
+    brand: '28 Litsea',
+    name: 'Self Care Ritual Campaign',
     description: 'Clean skincare essentials with a soft, natural aesthetic.',
     status: 'live',
     createdAt: '2026-03-20',

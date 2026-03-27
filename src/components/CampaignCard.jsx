@@ -33,9 +33,10 @@ export default function CampaignCard({ campaign, creators }) {
     <div style={styles.card} onClick={() => navigate(`/admin/campaigns/${campaign.id}`)}>
       {/* Top: Avatar + Name + Open button */}
       <div style={styles.topRow}>
-        <BrandAvatar initial={campaign.name[0]} size={56} photo={campaign.logo} />
+        <BrandAvatar initial={(campaign.brand || campaign.name)[0]} size={56} photo={campaign.logo} />
         <div style={{ flex: 1, minWidth: 0 }}>
-          <span style={styles.name}>{campaign.name}</span>
+          <span style={styles.name}>{campaign.brand || campaign.name}</span>
+          <div style={styles.campaignSubtitle}>{campaign.name}</div>
           {campaign.description && (
             <div style={styles.desc}>{campaign.description}</div>
           )}
@@ -124,10 +125,17 @@ const styles = {
     lineHeight: '30px',
     display: 'block',
   },
-  desc: {
+  campaignSubtitle: {
     fontSize: 14,
+    fontWeight: 500,
     color: 'var(--color-text-secondary)',
-    lineHeight: '22px',
+    lineHeight: '20px',
+    marginTop: 1,
+  },
+  desc: {
+    fontSize: 13,
+    color: 'var(--color-text-tertiary)',
+    lineHeight: '20px',
     marginTop: 2,
   },
   openBtn: {

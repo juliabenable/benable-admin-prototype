@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Upload, Send, BadgeCheck, Eye as EyeIcon, MoreHorizontal, AlertTriangle, Clock, AlertCircle } from 'lucide-react';
+import { Upload, Send, BadgeCheck, Eye as EyeIcon, MoreHorizontal, AlertTriangle, Clock, AlertCircle, Check, Play, Image, Clipboard, Shield, Sparkles, ExternalLink, ChevronDown, ChevronRight } from 'lucide-react';
 import { useAppState } from '../hooks/useAppState';
 import StatusBadge, { LiveBadge, ArchivedBadge, DaysBadge } from '../components/StatusBadge';
 import Avatar, { BrandAvatar } from '../components/Avatar';
@@ -8,7 +8,7 @@ import CreatorModal from '../components/CreatorModal';
 import NudgeDialog from '../components/NudgeDialog';
 import ImportDialog from '../components/ImportDialog';
 import CreatorSetupCard from '../components/CreatorSetupCard';
-import { STAGES, PHASES, STAGE_MAP, KANBAN_STAGES } from '../utils/stageConfig';
+import { STAGES, PHASES, STAGE_MAP, KANBAN_STAGES, CAMPAIGN_BRIEFS } from '../utils/stageConfig';
 import { formatFollowers, formatEngagement } from '../utils/formatters';
 
 export default function CampaignDetailContent({ campaignId }) {
@@ -24,6 +24,7 @@ export default function CampaignDetailContent({ campaignId }) {
   const [dropTarget, setDropTarget] = useState(null);
   const [selectedSetup, setSelectedSetup] = useState([]);
   const [top3, setTop3] = useState([]);
+  const [expandedSetupId, setExpandedSetupId] = useState(null);
 
   const handleDrop = (stageKey) => {
     if (dragCreator && dragCreator.stage !== stageKey) {
@@ -65,17 +66,17 @@ export default function CampaignDetailContent({ campaignId }) {
   if (!campaign) return <div style={{ padding: 32 }}>Campaign not found.</div>;
 
   return (
-    <div style={{ padding: 'var(--space-6) var(--space-8)', overflow: 'hidden' }}>
+    <div style={{ padding: 'var(--space-6) var(--space-8)' }}>
       {/* Header */}
       <div style={styles.header}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
-          <BrandAvatar initial={campaign.name[0]} size={48} photo={campaign.logo} />
+          <BrandAvatar initial={(campaign.brand || campaign.name)[0]} size={48} photo={campaign.logo} />
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-              <h1 style={{ fontSize: 24, fontWeight: 700 }}>{campaign.name}</h1>
+              <h1 style={{ fontSize: 24, fontWeight: 700 }}>{campaign.brand || campaign.name}</h1>
               {campaign.status === 'live' ? <LiveBadge /> : <ArchivedBadge />}
             </div>
-            <span style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>Started {campaign.createdAt}</span>
+            <span style={{ fontSize: 14, color: 'var(--color-text-secondary)' }}>{campaign.name} · Started {campaign.createdAt}</span>
           </div>
         </div>
         <div style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'center' }}>
@@ -131,6 +132,8 @@ export default function CampaignDetailContent({ campaignId }) {
                   onToggleTop3={() => setTop3(prev => prev.includes(creator.id) ? prev.filter(id => id !== creator.id) : [...prev, creator.id])}
                   onInvite={(id) => { moveCreatorStage(id, 'invited'); addToast(`${creator.name} invited`); }}
                   onDeny={(id) => { moveCreatorStage(id, 'denied'); addToast(`${creator.name} denied`); }}
+                  isExpanded={expandedSetupId === creator.id}
+                  onToggleExpand={() => setExpandedSetupId(prev => prev === creator.id ? null : creator.id)}
                 />
               ))}
             </div>
@@ -249,7 +252,7 @@ export default function CampaignDetailContent({ campaignId }) {
 
       {selectedCreator && <CreatorModal creator={selectedCreator} onClose={() => setSelectedCreator(null)} />}
       {nudgeCreator && <NudgeDialog creator={nudgeCreator} campaign={campaign} onClose={() => setNudgeCreator(null)} />}
-      {showImport && <ImportDialog campaignId={campaignId} campaignName={campaign.name} onClose={() => setShowImport(false)} />}
+      {showImport && <ImportDialog campaignId={campaignId} campaignName={`${campaign.brand || campaign.name} — ${campaign.name}`} onClose={() => setShowImport(false)} />}
     </div>
   );
 }
@@ -260,6 +263,7 @@ function ListSection({ section, onCreatorClick, onNudge }) {
   const [isOpen, setIsOpen] = useState(section.defaultOpen);
   const [expandedReviewId, setExpandedReviewId] = useState(null);
   const [feedbackText, setFeedbackText] = useState('');
+  const isAttentionSection = section.key === 'attention';
 
   return (
     <div style={ls.sectionWrap}>
@@ -282,9 +286,10 @@ function ListSection({ section, onCreatorClick, onNudge }) {
           {/* Rows */}
           {section.items.map(creator => {
             const urgency = getUrgencyState(creator);
-            // Only left border for overdue — no background wash
             const overdueLeftBorder = urgency.state === 'overdue' ? { boxShadow: 'inset 4px 0 0 var(--overdue-border)' } : {};
             const isReviewExpanded = expandedReviewId === creator.id;
+            const sub = creator.contentSubmission;
+            const brief = CAMPAIGN_BRIEFS[creator.campaignId];
 
             return (
             <div key={creator.id}>
@@ -296,8 +301,24 @@ function ListSection({ section, onCreatorClick, onNudge }) {
                     <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                       <span style={ls.creatorName} onClick={() => onCreatorClick(creator)}>{creator.name}</span>
                       <BadgeCheck size={14} color="#5B8EC9" />
+                      {/* Urgency icon next to name for attention section */}
+                      {isAttentionSection && urgency.state === 'overdue' && (
+                        <span style={{ ...ls.urgIconInner, background: 'var(--overdue-icon-bg)', color: 'var(--overdue-text)', marginLeft: 2 }}>!</span>
+                      )}
+                      {isAttentionSection && urgency.state === 'due_soon' && (
+                        <span style={{ ...ls.urgIconInner, background: 'var(--due-soon-icon-bg)', color: 'var(--due-soon-text)', marginLeft: 2 }}><Clock size={12} /></span>
+                      )}
                     </div>
-                    <div style={ls.creatorHandle}>{creator.handle}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={ls.creatorHandle}>{creator.handle}</span>
+                      {/* Social links for attention section */}
+                      {isAttentionSection && creator.igUrl && (
+                        <a href={creator.igUrl} target="_blank" rel="noreferrer" style={ls.socialLink} title="Instagram" onClick={e => e.stopPropagation()}>IG</a>
+                      )}
+                      {isAttentionSection && creator.tiktokUrl && (
+                        <a href={creator.tiktokUrl} target="_blank" rel="noreferrer" style={ls.socialLink} title="TikTok" onClick={e => e.stopPropagation()}>TT</a>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -315,7 +336,7 @@ function ListSection({ section, onCreatorClick, onNudge }) {
                   {urgency.actionText}
                 </div>
 
-                {/* Actions + urgency icon on far right */}
+                {/* Actions */}
                 <div style={ls.actionsCell}>
                   {section.actionType === 'review' && (
                     <button className="btn btn-primary btn-sm" onClick={() => setExpandedReviewId(isReviewExpanded ? null : creator.id)}>
@@ -335,39 +356,96 @@ function ListSection({ section, onCreatorClick, onNudge }) {
                   {section.actionType === 'view' && (
                     <span style={{ fontSize: 13, color: 'var(--color-text-tertiary)' }}>{STAGE_MAP[creator.stage]?.helperText}</span>
                   )}
-                  {/* Urgency icon — right side */}
-                  {urgency.state === 'overdue' && (
+                  {/* Urgency icon on right — only for non-attention sections */}
+                  {!isAttentionSection && urgency.state === 'overdue' && (
                     <span style={{ ...ls.urgIconInner, background: 'var(--overdue-icon-bg)', color: 'var(--overdue-text)' }}>!</span>
                   )}
-                  {urgency.state === 'due_soon' && (
+                  {!isAttentionSection && urgency.state === 'due_soon' && (
                     <span style={{ ...ls.urgIconInner, background: 'var(--due-soon-icon-bg)', color: 'var(--due-soon-text)' }}><Clock size={12} /></span>
                   )}
                   <button style={ls.moreBtn}><MoreHorizontal size={16} /></button>
                 </div>
               </div>
 
-              {/* Inline review expansion */}
-              {isReviewExpanded && creator.contentSubmission && (
+              {/* Full review expansion — matches Review Queue */}
+              {isReviewExpanded && sub && (
                 <div style={ls.reviewPanel}>
+                  {/* Header */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-4)', paddingBottom: 'var(--space-3)', borderBottom: '1px solid var(--color-border)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+                      <Avatar initials={creator.initials} size={40} photo={creator.photo} />
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                          <span style={{ fontWeight: 600, fontSize: 15 }}>{creator.name}</span>
+                          <BadgeCheck size={14} color="#5B8EC9" />
+                        </div>
+                        <div style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>
+                          {creator.handle} · {creator.city || ''} · {formatFollowers(creator.followers)} · {formatEngagement(creator.engagement)} eng
+                        </div>
+                      </div>
+                    </div>
+                    <button className="btn btn-ghost btn-sm" onClick={() => setExpandedReviewId(null)}>Close</button>
+                  </div>
+
+                  {/* Content: Media + Caption */}
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)', marginBottom: 'var(--space-4)' }}>
-                    <div style={{ background: 'var(--color-bg-sidebar)', borderRadius: 8, height: 160, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-tertiary)' }}>
-                      {creator.contentSubmission.type === 'video' ? '▶ Video' : '📷 Photo'}
+                    <div>
+                      {sub.type === 'video' ? (
+                        <div style={{ background: '#1a1a1a', borderRadius: 'var(--radius-lg)', height: 220, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-2)' }}>
+                          <Play size={40} color="#fff" /><span style={{ color: '#fff', fontSize: 13 }}>Video Content</span>
+                        </div>
+                      ) : (
+                        <div style={{ background: 'var(--color-bg-sidebar)', borderRadius: 'var(--radius-lg)', outline: '1px solid var(--color-border)', height: 220, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-2)' }}>
+                          <Image size={40} color="var(--color-text-tertiary)" /><span style={{ fontSize: 13, color: 'var(--color-text-tertiary)' }}>Photo Content</span>
+                        </div>
+                      )}
                     </div>
                     <div>
-                      <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: 6 }}>CAPTION</div>
-                      <p style={{ fontSize: 13, lineHeight: '20px' }}>{creator.contentSubmission.caption}</p>
+                      <h4 style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: 'var(--space-2)' }}>Caption / Post Copy</h4>
+                      <p style={{ fontSize: 14, lineHeight: '22px', whiteSpace: 'pre-wrap' }}>{sub.caption}</p>
                     </div>
                   </div>
-                  <div style={{ display: 'flex', gap: 'var(--space-3)', alignItems: 'flex-start' }}>
-                    <button className="btn btn-primary btn-sm" style={{ background: '#3D8B5E' }} onClick={() => { approveContent(creator.id); setExpandedReviewId(null); }}>
-                      ✓ Approve
-                    </button>
-                    <div style={{ flex: 1 }}>
-                      <textarea value={feedbackText} onChange={e => setFeedbackText(e.target.value)} placeholder="Feedback for creator..." style={{ width: '100%', minHeight: 48, fontSize: 13, fontFamily: 'inherit', padding: '6px 10px', border: '1px solid var(--color-border)', borderRadius: 6, outline: 'none', marginBottom: 6, resize: 'vertical' }} />
-                      <button className="btn btn-danger btn-sm" disabled={!feedbackText.trim()} onClick={() => { rejectContent(creator.id, feedbackText); setFeedbackText(''); setExpandedReviewId(null); }}>
-                        ✗ Reject + Feedback
-                      </button>
+
+                  {/* Campaign Brief Cards */}
+                  {brief && (
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)', marginBottom: 'var(--space-4)' }}>
+                      <CollapsibleBrief title="What Creators Will Do" icon={<Clipboard size={16} />}>
+                        <div style={{ marginBottom: 12 }}><span style={{ display: 'block', fontSize: 10, fontWeight: 600, color: 'var(--color-text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 4 }}>POST</span><p style={{ fontSize: 13, lineHeight: '20px', margin: 0 }}>{brief.whatCreatorsWillDo.post}</p></div>
+                        <div style={{ marginBottom: 12 }}><span style={{ display: 'block', fontSize: 10, fontWeight: 600, color: 'var(--color-text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 4 }}>CONTENT IDEAS</span><ul style={{ fontSize: 13, lineHeight: '22px', paddingLeft: 16, margin: 0 }}>{brief.whatCreatorsWillDo.contentIdeas.map((idea, i) => <li key={i}>{idea}</li>)}</ul></div>
+                      </CollapsibleBrief>
+                      <CollapsibleBrief title="Brand Guidelines" icon={<Shield size={16} />}>
+                        <div style={{ marginBottom: 12 }}>
+                          <span style={{ display: 'block', fontSize: 10, fontWeight: 600, color: '#3D8B5E', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 4 }}>DO'S</span>
+                          <ul style={{ fontSize: 13, lineHeight: '22px', listStyle: 'none', paddingLeft: 0, margin: 0 }}>
+                            {brief.brandGuidelines.dos.map((d, i) => (<li key={i} style={{ display: 'flex', gap: 6, alignItems: 'flex-start', marginBottom: 4 }}><span style={{ color: '#3D8B5E', fontWeight: 600, flexShrink: 0 }}>✓</span> {d}</li>))}
+                          </ul>
+                        </div>
+                        <div>
+                          <span style={{ display: 'block', fontSize: 10, fontWeight: 600, color: '#C75B4A', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 4 }}>DON'TS</span>
+                          <ul style={{ fontSize: 13, lineHeight: '22px', listStyle: 'none', paddingLeft: 0, margin: 0 }}>
+                            {brief.brandGuidelines.donts.map((d, i) => (<li key={i} style={{ display: 'flex', gap: 6, alignItems: 'flex-start', marginBottom: 4 }}><span style={{ color: '#C75B4A', fontWeight: 600, flexShrink: 0 }}>✗</span> {d}</li>))}
+                          </ul>
+                        </div>
+                      </CollapsibleBrief>
                     </div>
+                  )}
+
+                  {/* AI Warning */}
+                  {sub.aiReview === 'flagged' && (
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-2)', padding: 'var(--space-3)', background: 'var(--color-warning-light)', color: 'var(--color-warning-text)', borderRadius: 'var(--radius-md)', marginBottom: 'var(--space-4)', fontSize: 13 }}>
+                      <AlertTriangle size={16} /><span>{sub.aiNotes || 'AI flagged potential issues.'}</span>
+                    </div>
+                  )}
+
+                  {/* Feedback + Actions */}
+                  <textarea value={feedbackText} onChange={e => setFeedbackText(e.target.value)} placeholder="Write specific feedback for the creator (required for rejection)..." style={{ width: '100%', minHeight: 60, fontSize: 13, fontFamily: 'inherit', padding: 'var(--space-2) var(--space-3)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', outline: 'none', marginBottom: 'var(--space-3)', resize: 'vertical' }} />
+                  <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
+                    <button className="btn btn-primary" style={{ flex: 1, justifyContent: 'center' }} onClick={() => { addToast(`Feedback sent to ${creator.name}. Creator stays in current stage.`, 'info'); setFeedbackText(''); setExpandedReviewId(null); }} disabled={!feedbackText.trim()}>
+                      <Send size={16} /> Send Feedback
+                    </button>
+                    <button className="btn btn-secondary" style={{ flex: 1, justifyContent: 'center', background: '#3D8B5E', color: '#fff', border: 'none' }} onClick={() => { approveContent(creator.id); setExpandedReviewId(null); }}>
+                      <Check size={16} /> Approve Without Feedback
+                    </button>
                   </div>
                 </div>
               )}
@@ -376,6 +454,21 @@ function ListSection({ section, onCreatorClick, onNudge }) {
           }
         </div>
       )}
+    </div>
+  );
+}
+
+/* ─── Collapsible Brief Card (used in list review) ─── */
+function CollapsibleBrief({ title, icon, children }) {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <div style={{ background: 'var(--color-bg-card)', outline: '1px solid var(--color-border)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-4)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: isOpen ? 'var(--space-3)' : 0, paddingBottom: isOpen ? 'var(--space-2)' : 0, borderBottom: isOpen ? '1px solid var(--color-border)' : 'none', cursor: 'pointer' }} onClick={() => setIsOpen(!isOpen)}>
+        {icon}
+        <span style={{ fontWeight: 600, fontSize: 14, flex: 1 }}>{title}</span>
+        {isOpen ? <ChevronDown size={16} color="var(--color-text-tertiary)" /> : <ChevronRight size={16} color="var(--color-text-tertiary)" />}
+      </div>
+      {isOpen && children}
     </div>
   );
 }
@@ -448,7 +541,8 @@ const ls = {
     justifyContent: 'flex-end',
   },
   urgIconInner: { display: 'flex', alignItems: 'center', justifyContent: 'center', width: 20, height: 20, borderRadius: 5, fontSize: 12, fontWeight: 700, flexShrink: 0 },
-  reviewPanel: { padding: '16px 24px 20px', borderBottom: '1px solid var(--color-border)', background: 'var(--color-bg-sidebar)' },
+  socialLink: { fontSize: 11, fontWeight: 600, color: 'var(--color-accent)', textDecoration: 'none', padding: '1px 4px', borderRadius: 'var(--radius-sm)', background: 'var(--color-accent-light)' },
+  reviewPanel: { padding: 'var(--space-5) 24px 24px', borderBottom: '1px solid var(--color-border)', background: 'var(--color-bg-sidebar)' },
   moreBtn: {
     background: 'none',
     border: 'none',

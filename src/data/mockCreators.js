@@ -1,3 +1,49 @@
+// Generate mock posts for creators - realistic Unsplash content photos
+function generatePosts(creatorId, niche, platform) {
+  const nicheImages = {
+    Food: [
+      'photo-1504674900247-0877df9cc836', 'photo-1512621776951-a57141f2eefd', 'photo-1476224203421-9ac39bcb3327',
+      'photo-1493770348161-369560ae357d', 'photo-1540189549336-e6e99c3679fe', 'photo-1565299624946-b28f40a0ae38',
+      'photo-1482049016688-2d3e1b311543', 'photo-1467003909585-2f8a72700288',
+    ],
+    Beauty: [
+      'photo-1596462502278-27bfdc403348', 'photo-1522335789203-aabd1fc54bc9', 'photo-1487412720507-e7ab37603c6f',
+      'photo-1616394584738-fc6e612e71b9', 'photo-1598440947619-2c35fc9aa908', 'photo-1583209814683-c023dd293cc6',
+      'photo-1570172619644-dfd03ed5d881', 'photo-1512496015851-a90fb38ba796',
+    ],
+    Wellness: [
+      'photo-1544367567-0f2fcb009e0b', 'photo-1506126613408-eca07ce68773', 'photo-1571019613454-1cb2f99b2d8b',
+      'photo-1518611012118-696072aa579a', 'photo-1545205597-3d9d02c29597', 'photo-1599447421416-3414500d18a5',
+      'photo-1552196563-55cd4e45efb3', 'photo-1574680096145-d05b474e2155',
+    ],
+    Home: [
+      'photo-1586023492125-27b2c045efd7', 'photo-1616486338812-3dadae4b4ace', 'photo-1618221195710-dd6b41faaea6',
+      'photo-1556909114-f6e7ad7d3136', 'photo-1567016432779-094069958ea5', 'photo-1583847268964-b28dc8f51f92',
+      'photo-1493663284031-b7e3aefcae8e', 'photo-1505693416388-ac5ce068fe85',
+    ],
+    Lifestyle: [
+      'photo-1522199755839-a2bacb67c546', 'photo-1507003211169-0a1dd7228f2d', 'photo-1517457373958-b7bdd4587205',
+      'photo-1487412720507-e7ab37603c6f', 'photo-1529333166437-7750a6dd5a70', 'photo-1506126613408-eca07ce68773',
+      'photo-1504674900247-0877df9cc836', 'photo-1536640712-4d4c36ff0e4e',
+    ],
+    'Food & lifestyle': [
+      'photo-1504674900247-0877df9cc836', 'photo-1512621776951-a57141f2eefd', 'photo-1476224203421-9ac39bcb3327',
+      'photo-1522199755839-a2bacb67c546', 'photo-1507003211169-0a1dd7228f2d', 'photo-1493770348161-369560ae357d',
+      'photo-1540189549336-e6e99c3679fe', 'photo-1529333166437-7750a6dd5a70',
+    ],
+  };
+  const images = nicheImages[niche] || nicheImages.Lifestyle;
+  const plats = platform === 'both' ? ['ig', 'tiktok'] : [platform];
+  return images.slice(0, 8).map((img, i) => ({
+    id: `${creatorId}-p${i}`,
+    image: `https://images.unsplash.com/${img}?w=400&h=400&fit=crop`,
+    platform: plats[i % plats.length],
+    likes: Math.floor(Math.random() * 40000) + 5000,
+    comments: Math.floor(Math.random() * 3000) + 200,
+    shares: Math.floor(Math.random() * 5000) + 500,
+  }));
+}
+
 export const MOCK_CREATORS = [
   // ========== Pikora Campaign — 10 creators across 12 stages ==========
   {
@@ -8,6 +54,7 @@ export const MOCK_CREATORS = [
     bio: 'Home cook sharing easy recipes and kitchen tips. Bone broth enthusiast.',
     email: 'sarah@sarahcooks.com', phone: '(310) 555-0142',
     platform: 'ig',
+
     notes: [
       { id: 'n1', author: 'Kate', date: '2026-03-22T14:30:00', text: 'Tried DM on Instagram, no response. Will try email nudge.' },
       { id: 'n2', author: 'Julia', date: '2026-03-21T10:00:00', text: 'Top pick for Pikora. Great engagement on food content.' },
@@ -305,3 +352,36 @@ export const MOCK_CREATORS = [
     demographics: { location: '77% USA', gender: '78% Female', age: '24–36' },
   },
 ];
+
+// Add social URLs and generated posts to all creators
+const socialUrls = {
+  c1: { igUrl: 'https://instagram.com/sarahcooks', tiktokUrl: null },
+  c2: { igUrl: 'https://instagram.com/jadeathome', tiktokUrl: 'https://tiktok.com/@jadeathome' },
+  c3: { igUrl: 'https://instagram.com/amybeauty', tiktokUrl: null },
+  c4: { igUrl: 'https://instagram.com/lisaeats', tiktokUrl: null },
+  c5: { igUrl: null, tiktokUrl: 'https://tiktok.com/@tessaskincare' },
+  c6: { igUrl: 'https://instagram.com/mayacooks', tiktokUrl: null },
+  c7: { igUrl: 'https://instagram.com/chrislife', tiktokUrl: 'https://tiktok.com/@chrislife' },
+  c8: { igUrl: 'https://instagram.com/priyaeats', tiktokUrl: null },
+  c9: { igUrl: null, tiktokUrl: 'https://tiktok.com/@danielatorres' },
+  c10: { igUrl: 'https://instagram.com/kimtran', tiktokUrl: null },
+  c11: { igUrl: 'https://instagram.com/dianacooks', tiktokUrl: null },
+  c12: { igUrl: null, tiktokUrl: 'https://tiktok.com/@morganfragrance' },
+  c13: { igUrl: 'https://instagram.com/rachelfoodie', tiktokUrl: null },
+  c14: { igUrl: 'https://instagram.com/mayabeauty', tiktokUrl: 'https://tiktok.com/@mayabeauty' },
+  c15: { igUrl: null, tiktokUrl: 'https://tiktok.com/@jordanwellness' },
+  c16: { igUrl: 'https://instagram.com/kaiscents', tiktokUrl: null },
+  c17: { igUrl: 'https://instagram.com/bellawellness', tiktokUrl: 'https://tiktok.com/@bellawellness' },
+  c18: { igUrl: 'https://instagram.com/emmascents', tiktokUrl: null },
+  c19: { igUrl: 'https://instagram.com/sofiaskin', tiktokUrl: null },
+  c20: { igUrl: null, tiktokUrl: 'https://tiktok.com/@taylorjskin' },
+  c21: { igUrl: 'https://instagram.com/avaglow', tiktokUrl: null },
+  c22: { igUrl: 'https://instagram.com/lenaskin', tiktokUrl: 'https://tiktok.com/@lenaskin' },
+};
+
+MOCK_CREATORS.forEach(c => {
+  const urls = socialUrls[c.id] || {};
+  c.igUrl = urls.igUrl || null;
+  c.tiktokUrl = urls.tiktokUrl || null;
+  c.posts = generatePosts(c.id, c.niche, c.platform);
+});

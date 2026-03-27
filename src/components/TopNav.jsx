@@ -34,7 +34,8 @@ export default function TopNav() {
             </NavLink>
           ))}
         </div>
-        <div style={styles.userAvatar}>K</div>
+        {/* spacer to balance layout */}
+        <div style={{ width: 32 }} />
       </div>
     </nav>
   );
@@ -52,7 +53,7 @@ const styles = {
   inner: {
     maxWidth: 1400,
     margin: '0 auto',
-    padding: '0 var(--space-8)',
+    padding: '0 var(--space-8) 0 var(--space-4)',
     height: '100%',
     display: 'flex',
     alignItems: 'center',

@@ -20,7 +20,7 @@ export default function Home() {
       items.push({
         id: `overdue-${c.id}`, creatorId: c.id, creatorName: c.name,
         description: `No response to invite — ${c.daysInStage * 24}h overdue`,
-        campaignName: camp?.name || '', timeLabel: `${c.daysInStage}d overdue`,
+        campaignName: camp?.brand || camp?.name || '', timeLabel: `${c.daysInStage}d overdue`,
         urgency: c.daysInStage >= 3 ? 'high' : 'medium', actionType: 'nudge',
       });
     });
@@ -29,7 +29,7 @@ export default function Home() {
       items.push({
         id: `review-${c.id}`, creatorId: c.id, creatorName: c.name,
         description: 'Content submitted, awaiting review',
-        campaignName: camp?.name || '', timeLabel: c.daysInStage === 0 ? 'Today' : `${c.daysInStage}d ago`,
+        campaignName: camp?.brand || camp?.name || '', timeLabel: c.daysInStage === 0 ? 'Today' : `${c.daysInStage}d ago`,
         urgency: 'medium', actionType: 'review',
       });
     });
