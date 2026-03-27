@@ -357,7 +357,7 @@ export default function CreatorSetupCard({ creator, onInvite, onDeny, isSelected
               <Star size={18} fill={isTop3 ? '#C68A19' : 'none'} color={isTop3 ? '#C68A19' : 'var(--color-text-tertiary)'} />
             </button>
             <button className="btn btn-primary" style={{ flex: 1, justifyContent: 'center' }} onClick={() => onInvite(creator.id)}>
-              <Plus size={16} /> Shortlist
+              <Plus size={16} /> {isPreProgram ? 'Shortlist' : 'Assign to Campaign'}
             </button>
             <button className="btn btn-ghost" style={{ color: 'var(--color-danger)' }} onClick={() => onDeny(creator.id)}>
               Deny

@@ -369,7 +369,7 @@ export const MOCK_CREATORS = [
   {
     id: 'c24', name: 'Nina Rodriguez', handle: '@ninaeats', niche: 'Food',
     followers: 21000, engagement: 5.1, avgViews: 30000, avgLikes: 3500,
-    campaignId: 'camp1', stage: 'not_in_program', daysInStage: 0, isOverdue: false,
+    campaignId: 'camp1', stage: 'in_program', daysInStage: 0, isOverdue: false,
     photo: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=200&h=200&fit=crop&crop=face', initials: 'NR', city: 'Miami, FL',
     bio: 'Latin fusion cooking. Miami foodie sharing vibrant flavors.',
     email: 'nina@ninaeats.com', phone: '(305) 555-0421',
@@ -422,7 +422,7 @@ export const MOCK_CREATORS = [
   {
     id: 'c28', name: 'Jasmine Liu', handle: '@jasmineglow', niche: 'Beauty',
     followers: 14500, engagement: 4.8, avgViews: 20000, avgLikes: 2500,
-    campaignId: 'camp2', stage: 'not_in_program', daysInStage: 0, isOverdue: false,
+    campaignId: 'camp2', stage: 'in_program', daysInStage: 0, isOverdue: false,
     photo: 'https://images.unsplash.com/photo-1505640070685-3d3c512a3d18?w=200&h=200&fit=crop&crop=face', initials: 'JL', city: 'New York, NY',
     bio: 'Skincare obsessed. Reviewing products so you don\'t have to.',
     email: 'jasmine@jasmineglow.com', phone: '(212) 555-0377',

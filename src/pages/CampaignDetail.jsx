@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Upload, Send, BadgeCheck, Eye as EyeIcon, MoreHorizontal, AlertTriangle, Clock, AlertCircle, Check, Play, Image, Clipboard, Shield, Sparkles, ExternalLink, ChevronDown, ChevronRight } from 'lucide-react';
+import { Upload, Send, BadgeCheck, Eye as EyeIcon, MoreHorizontal, AlertTriangle, Clock, AlertCircle, Check, Play, Image, Clipboard, Shield, Sparkles, ExternalLink, ChevronDown, ChevronRight, Plus } from 'lucide-react';
 import { useAppState } from '../hooks/useAppState';
 import StatusBadge, { LiveBadge, ArchivedBadge, DaysBadge } from '../components/StatusBadge';
 import Avatar, { BrandAvatar } from '../components/Avatar';
@@ -61,7 +61,7 @@ export default function CampaignDetailContent({ campaignId }) {
     ].filter(s => s.items.length > 0);
   }, [campaignCreators]);
 
-  const preInvitedCreators = campaignCreators.filter(c => c.stage === 'not_in_program');
+  const setupCreators = campaignCreators.filter(c => c.stage === 'not_in_program' || c.stage === 'in_program');
 
   if (!campaign) return <div style={{ padding: 32 }}>Campaign not found.</div>;
 
@@ -97,15 +97,18 @@ export default function CampaignDetailContent({ campaignId }) {
       {view === 'setup' && (
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-4)' }}>
-            <h2 style={{ fontSize: 16, fontWeight: 600 }}>Creator Setup ({preInvitedCreators.length} not in program)</h2>
+            <h2 style={{ fontSize: 16, fontWeight: 600 }}>Creator Setup ({setupCreators.length} creators)</h2>
             <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
               {selectedSetup.length > 0 && (
                 <>
                   <button className="btn btn-primary btn-sm" onClick={() => {
-                    selectedSetup.forEach(id => moveCreatorStage(id, 'invited_to_program'));
-                    addToast(`${selectedSetup.length} creators invited`);
+                    selectedSetup.forEach(id => {
+                      const c = campaignCreators.find(cr => cr.id === id);
+                      moveCreatorStage(id, c?.stage === 'in_program' ? 'assigned_to_campaign' : 'invited_to_program');
+                    });
+                    addToast(`${selectedSetup.length} creators shortlisted`);
                     setSelectedSetup([]);
-                  }}>Invite Selected ({selectedSetup.length})</button>
+                  }}>Shortlist Selected ({selectedSetup.length})</button>
                   <button className="btn btn-ghost btn-sm" style={{ color: 'var(--color-danger)' }} onClick={() => {
                     selectedSetup.forEach(id => moveCreatorStage(id, 'denied'));
                     addToast(`${selectedSetup.length} creators denied`);
@@ -115,14 +118,14 @@ export default function CampaignDetailContent({ campaignId }) {
               )}
             </div>
           </div>
-          {preInvitedCreators.length === 0 ? (
+          {setupCreators.length === 0 ? (
             <div style={styles.emptyState}>
               <p style={{ fontSize: 14, color: 'var(--color-text-secondary)' }}>No creators imported yet.</p>
               <button className="btn btn-primary" onClick={() => setShowImport(true)}>Import Creators</button>
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-              {preInvitedCreators.map(creator => (
+              {setupCreators.map(creator => (
                 <CreatorSetupCard
                   key={creator.id}
                   creator={creator}
@@ -130,7 +133,11 @@ export default function CampaignDetailContent({ campaignId }) {
                   onToggleSelect={() => setSelectedSetup(prev => prev.includes(creator.id) ? prev.filter(id => id !== creator.id) : [...prev, creator.id])}
                   isTop3={top3.includes(creator.id)}
                   onToggleTop3={() => setTop3(prev => prev.includes(creator.id) ? prev.filter(id => id !== creator.id) : [...prev, creator.id])}
-                  onInvite={(id) => { moveCreatorStage(id, 'invited_to_program'); addToast(`${creator.name} invited`); }}
+                  onInvite={(id) => {
+                    const target = creator.stage === 'in_program' ? 'assigned_to_campaign' : 'invited_to_program';
+                    moveCreatorStage(id, target);
+                    addToast(creator.stage === 'in_program' ? `${creator.name} assigned to campaign` : `${creator.name} invited to Creator Program`);
+                  }}
                   onDeny={(id) => { moveCreatorStage(id, 'denied'); addToast(`${creator.name} denied`); }}
                   isExpanded={expandedSetupId === creator.id}
                   onToggleExpand={() => setExpandedSetupId(prev => prev === creator.id ? null : creator.id)}
@@ -259,7 +266,7 @@ export default function CampaignDetailContent({ campaignId }) {
 
 /* ─── Grouped List Section (matches Benable table UI) ─── */
 function ListSection({ section, onCreatorClick, onNudge }) {
-  const { approveContent, rejectContent, addToast } = useAppState();
+  const { approveContent, rejectContent, addToast, moveCreatorStage } = useAppState();
   const [isOpen, setIsOpen] = useState(section.defaultOpen);
   const [expandedReviewId, setExpandedReviewId] = useState(null);
   const [feedbackText, setFeedbackText] = useState('');
@@ -343,7 +350,12 @@ function ListSection({ section, onCreatorClick, onNudge }) {
                       <EyeIcon size={12} /> {isReviewExpanded ? 'Close' : 'Review'}
                     </button>
                   )}
-                  {section.actionType === 'nudge' && (
+                  {section.actionType === 'nudge' && creator.stage === 'not_in_program' && (
+                    <button className="btn btn-primary btn-sm" onClick={() => { moveCreatorStage(creator.id, 'invited_to_program'); addToast(`${creator.name} invited to Creator Program`); }}>
+                      <Plus size={12} /> Invite
+                    </button>
+                  )}
+                  {section.actionType === 'nudge' && creator.stage !== 'not_in_program' && (
                     <button className="btn btn-primary btn-sm" onClick={() => onNudge(creator)}>
                       <Send size={12} /> Send Nudge
                     </button>
@@ -353,7 +365,12 @@ function ListSection({ section, onCreatorClick, onNudge }) {
                       <EyeIcon size={12} /> Preview
                     </button>
                   )}
-                  {section.actionType === 'view' && (
+                  {section.actionType === 'view' && creator.stage === 'not_in_program' && (
+                    <button className="btn btn-primary btn-sm" onClick={() => { moveCreatorStage(creator.id, 'invited_to_program'); addToast(`${creator.name} invited to Creator Program`); }}>
+                      <Plus size={12} /> Invite
+                    </button>
+                  )}
+                  {section.actionType === 'view' && creator.stage !== 'not_in_program' && (
                     <span style={{ fontSize: 13, color: 'var(--color-text-tertiary)' }}>{STAGE_MAP[creator.stage]?.helperText}</span>
                   )}
                   {/* Urgency icon on right — only for non-attention sections */}
