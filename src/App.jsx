@@ -2,6 +2,7 @@ import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider } from './hooks/useAppState';
 import TopNav from './components/TopNav';
 import ToastContainer from './components/Toast';
+import DemoPanel from './components/DemoPanel';
 import Home from './pages/Home';
 import Campaigns from './pages/Campaigns';
 import Creators from './pages/Creators';
@@ -25,6 +26,7 @@ export default function App() {
           </Routes>
         </main>
         <ToastContainer />
+        <DemoPanel />
       </AppProvider>
     </HashRouter>
   );
