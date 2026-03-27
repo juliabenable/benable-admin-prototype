@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider } from './hooks/useAppState';
 import TopNav from './components/TopNav';
 import ToastContainer from './components/Toast';
@@ -10,7 +10,7 @@ import Settings from './pages/Settings';
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <AppProvider>
         <TopNav />
         <main>
@@ -26,6 +26,6 @@ export default function App() {
         </main>
         <ToastContainer />
       </AppProvider>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
